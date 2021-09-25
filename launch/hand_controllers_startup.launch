@@ -1,7 +1,14 @@
 <launch>
+  <!-- <include file="$(find dynamixel_hand)/launch/dynamixel_hand_controller_startup.launch"> -->
+  <!--   <arg name="namespace" value="left_hand_controller"/> -->
+  <!--   <arg name="config_file" value="$(find dynamixel_hand)/config/left_hand.yaml"/> -->
+  <!--   <arg name="usb_port" value="/dev/ttyUSB1"/> -->
+  <!--   <arg name="server_name" value="lhand_dynamixel_joint_trajectory_server"/> -->
+  <!-- </include> -->
   <include file="$(find dynamixel_hand)/launch/dynamixel_hand_controller_startup.launch">
-    <arg name="namespace" value="left_hand_controller"/>
-    <arg name="config_file" value="$(find dynamixel_hand)/config/left_hand.yaml"/>
-    <arg name="usb_port" value="/dev/ttyUSB0"/>
+    <arg name="namespace" value="right_hand_controller"/>
+    <arg name="config_file" value="$(find dynamixel_hand)/config/right_hand.yaml"/>
+    <arg name="usb_port" value="/dev/ttyUSB2"/>
+    <arg name="server_name" value="rhand_dynamixel_joint_trajectory_server"/>
   </include>
 </launch>
