@@ -1,19 +1,10 @@
 <launch>
-  <!-- <arg name="MACHINE" default="jaxonvision" /> -->
-  <!-- <include file="$(find dynamixel_hand)/launch/dynamixel_hand_controller_startup.launch"> -->
-  <!--   <arg name="namespace" value="left_hand_controller"/> -->
-  <!--   <arg name="config_file" value="$(find dynamixel_hand)/config/left_hand.yaml"/> -->
-  <!--   <arg name="usb_port" value="/dev/BandoHandL"/> -->
-  <!--   <arg name="server_name" value="lhand_dynamixel_joint_trajectory_server"/> -->
-  <!-- <arg name="MACHINE" value="$(arg MACHINE)" /> -->
-  <!-- </include> -->
-  <!-- <include file="$(find dynamixel_hand)/launch/dynamixel_hand_controller_startup.launch"> -->
-  <!--   <arg name="namespace" value="right_hand_controller"/> -->
-  <!--   <arg name="config_file" value="$(find dynamixel_hand)/config/right_hand.yaml"/> -->
-  <!--   <arg name="usb_port" value="/dev/BandoHandR"/> -->
-  <!--   <arg name="server_name" value="rhand_dynamixel_joint_trajectory_server"/> -->
-  <!-- </include> -->
   <include file="$(find dynamixel_hand)/launch/hand_controllers_right_startup.launch">
+  </include>
+  <include file="$(find timed_roslaunch)/launch/timed_roslaunch.launch">
+    <arg name="time" value="1" />
+    <arg name="pkg" value="dynamixel_hand" />
+    <arg name="file" value="hand_controllers_left_startup.launch"/>
   </include>
   <!-- <include file="$(find dynamixel_hand)/launch/hand_controllers_left_startup.launch"> -->
   <!-- </include> -->
