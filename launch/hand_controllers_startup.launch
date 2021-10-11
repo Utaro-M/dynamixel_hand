@@ -13,8 +13,8 @@
   <!--   <arg name="usb_port" value="/dev/BandoHandR"/> -->
   <!--   <arg name="server_name" value="rhand_dynamixel_joint_trajectory_server"/> -->
   <!-- </include> -->
-  <include file="$(find dynamixel_hand)/launch/dynamixel_hand_controller_right_startup.launch">
+  <include file="$(find dynamixel_hand)/launch/hand_controllers_right_startup.launch">
   </include>
-  <include file="$(find dynamixel_hand)/launch/dynamixel_hand_controller_left_startup.launch">
-  </include>
+  <!-- <include file="$(find dynamixel_hand)/launch/hand_controllers_left_startup.launch"> -->
+  <!-- </include> -->
 </launch>
