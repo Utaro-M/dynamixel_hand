@@ -1,15 +1,15 @@
 L_THUMB_JOINT0:
-  ID: 1
+  ID: 4
   Return_Delay_Time: 0
   Operating_Mode: 5
   Current_Limit: 740
 L_THUMB_JOINT1:
-  ID: 2
+  ID: 5
   Return_Delay_Time: 0
   Operating_Mode: 5
   Current_Limit: 740
 L_MIDDLE_JOINT0:
-  ID: 3
+  ID: 6
   Return_Delay_Time: 0
   Operating_Mode: 5
   Current_Limit: 740
