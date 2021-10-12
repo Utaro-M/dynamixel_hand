@@ -1,11 +1,10 @@
 <launch>
+  <!-- <arg name="MACHINE" default="jaxonvision" /> <!-\- set MACHINE in dynamixel_hand_controller_startup.launch -\-> -->
   <include file="$(find dynamixel_hand)/launch/hand_controllers_right_startup.launch">
   </include>
-  <include file="$(find timed_roslaunch)/launch/timed_roslaunch.launch">
+  <include file="$(find timed_roslaunch)/timed_roslaunch.launch">
     <arg name="time" value="1" />
     <arg name="pkg" value="dynamixel_hand" />
     <arg name="file" value="hand_controllers_left_startup.launch"/>
   </include>
-  <!-- <include file="$(find dynamixel_hand)/launch/hand_controllers_left_startup.launch"> -->
-  <!-- </include> -->
 </launch>

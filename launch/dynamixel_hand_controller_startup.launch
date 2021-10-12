@@ -1,8 +1,9 @@
 <launch>
-  <arg name="usb_port"                default="/dev/ttyUSB0"/>
+  <machine name="jaxonvision" address="vmachine" env-loader="/home/leus/catkin_ws/jaxon_tutorial/devel/env.sh" />
+  <arg name="usb_port"                default="/dev/BndoHandR"/>
   <arg name="dxl_baud_rate"           default="1000000"/>
   <arg name="namespace"               default="dynamixel_hand_controller"/>
-  <arg name="server_name"               default="lhand_dynamixel_joint_trajectory_server"/>
+  <arg name="server_name"             default="lhand_dynamixel_joint_trajectory_server"/>
 
   <arg name="use_moveit"              default="false"/>
   <arg name="use_joint_state"         default="true"/>
@@ -29,4 +30,3 @@
   <node name="$(arg server_name)" pkg="dynamixel_hand" type="dynamixel_joint_trajectory_server.py"
     required="true" output="screen" args="$(arg namespace) $(arg config_file)" />
 </launch>
-<!-- dynamixel_joint_trajectory_server -->
