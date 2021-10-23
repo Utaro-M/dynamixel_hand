@@ -29,7 +29,7 @@
   ;;  (let* ((prev-av (send robot :angle-vector)))
   ;;    (send-all (gethash ctype controller-table) :push-angle-vector-simulation av tm prev-av)))
   (:current-vector
-   (cv &optional (ctype controller-type) (start-time 0) &key (scale 1))
+   (cv &optional (tm 1000) (ctype controller-type) (start-time 0) &key (scale 1))
    "Send joint angle to robot, this method returns immediately, so use :wait-interpolation to block until the motion stops.
 - cv : current vector [deg]
    if designated tm is faster than fastest speed, use fastest speed
@@ -47,8 +47,9 @@
                  (/ tm 1000.0);; duration
                  (instantiate float-vector (length cv));; accelerations
                  cv));; current vector
-         (caction (gethash ctype controller-table))
-         (joint-names (cdr (assoc :joint-names (send self ctype)))))
+         (joint-names (cdr (assoc :joint-names (car (send self ctype))))))
+     (format t "(assoc :joint-names (send self ctype)) =~A~%" (car (send self ctype)))
+     (format t "(assoc :joint-names (send self ctype)) =~A~%" (assoc :joint-names (car (send self ctype))))
      ;;model
      ;; !!!     (send robot :angle-vector av)
 
@@ -69,12 +70,17 @@
 
    ;;simulation
    ;; (when (send self :simulation-modep)
-   ;;   (return-from :send-ros-controller nil))
+     ;;   (return-from :send-ros-controller nil))
+     (format t "joint-names = ~A~%" joint-names)
    (dolist (name joint-names)
      (unless (send robot :joint name)
        (warning-message 1 "[robot-interface.l] (send-ros-controller) could not find joint-name '~A' (~A)~%" name (send robot :joint name))
        (return-from :current-vector nil)))
-   (let* ((goal (send caction :make-goal-instance))
+   (format t "ctype = ~A~%" ctype)
+   (format t "controller-table = ~A~%" controller-table)
+   (let* ((caction (car (gethash ctype controller-table)))
+          ;; (caction (cdr (assoc :action-type (car (send self ctype)))))
+          (goal (send caction :make-goal-instance))
 	  (goal-points nil)
 	  (st (if (numberp start-time)
                   (ros::time+ (ros::time-now) (ros::time start-time))
@@ -82,6 +88,7 @@
 	  (joints (mapcar #'(lambda (x)
                           (send robot (intern (string-upcase x) *keyword-package*)))
                       joint-names)))
+     (format t "caction = ~A~%" caction)
      (send goal :header :seq 1)
      (send goal :header :stamp st)
 
@@ -124,17 +131,16 @@
          (push (instance trajectory_msgs::JointTrajectoryPoint
                          :init
                          :positions positions
-                         :velocities velocities
-                         :accelerations accelerations
+                         ;; :velocities velocities
+                         ;; :accelerations accelerations
                          :effort efforts
                          :time_from_start (ros::time duration))
                goal-points)
 	   )
        (send self :spin-once)
        (send goal :goal :trajectory :points goal-points)
-       )
      (send caction :send-goal goal)
-     ))
+     )))
   )
 
 (defun rhp3hand_r-init (&rest args)

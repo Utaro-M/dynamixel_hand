@@ -44,11 +44,13 @@ class DynamixelJointTrajectoryServer():
         wait_time = 0.0
         for p in goal.trajectory.points:
             point = JointTrajectoryPoint()
-            point.positions = [
+            if len(p.positions) != 0:
+                point.positions = [
                     p.positions[hand_thumb_roll_id],
                     p.positions[hand_thumb_pitch_id],
                     p.positions[hand_middle_pitch_id]]
-            point.velocities = [
+            if len(p.velocities) != 0:
+                point.velocities = [
                     p.velocities[hand_thumb_roll_id],
                     p.velocities[hand_thumb_pitch_id],
                     p.velocities[hand_middle_pitch_id]]
