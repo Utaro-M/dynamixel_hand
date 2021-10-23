@@ -52,6 +52,11 @@ class DynamixelJointTrajectoryServer():
                     p.velocities[hand_thumb_roll_id],
                     p.velocities[hand_thumb_pitch_id],
                     p.velocities[hand_middle_pitch_id]]
+            if len(p.effort) != 0:
+                point.effort = [
+                    p.effort[hand_thumb_roll_id],
+                    p.effort[hand_thumb_pitch_id],
+                    p.effort[hand_middle_pitch_id]]
             point.time_from_start = p.time_from_start
             pub_msg.points.append(point)
             wait_time = p.time_from_start.to_sec()
