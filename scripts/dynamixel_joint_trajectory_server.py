@@ -31,6 +31,7 @@ class DynamixelJointTrajectoryServer():
         with open(conf) as f:
             yml = yaml.load(f)
             self._joint_names = yml.keys()
+            self._current_limit = [yml[yml.keys()[0]]["Current_Limit"], yml[yml.keys()[1]]["Current_Limit"] ,yml[yml.keys()[2]]["Current_Limit"]]
 
     def execute(self, goal):
         success = True
@@ -56,9 +57,14 @@ class DynamixelJointTrajectoryServer():
                     p.velocities[hand_middle_pitch_id]]
             if len(p.effort) != 0:
                 point.effort = [
-                    p.effort[hand_thumb_roll_id],
-                    p.effort[hand_thumb_pitch_id],
-                    p.effort[hand_middle_pitch_id]]
+                    p.effort[hand_thumb_roll_id] * self._current_limit[0],
+                    p.effort[hand_thumb_pitch_id] * self._current_limit[1],
+                    p.effort[hand_middle_pitch_id] * self._current_limit[2]]
+            else:
+                point.effort = [
+                    1.0 * self._current_limit[0],
+                    1.0 * self._current_limit[1],
+                    1.0 * self._current_limit[2]]
             point.time_from_start = p.time_from_start
             pub_msg.points.append(point)
             wait_time = p.time_from_start.to_sec()
