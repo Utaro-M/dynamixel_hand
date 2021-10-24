@@ -24,31 +24,37 @@
         )
       )
     )
-  ;; (:current-vector-simulation
+   ;; (:current-vector-simulation
   ;;  (av tm ctype)
   ;;  (let* ((prev-av (send robot :angle-vector)))
   ;;    (send-all (gethash ctype controller-table) :push-angle-vector-simulation av tm prev-av)))
-  (:current-vector
-   (cv &optional (ctype controller-type) (start-time 0) &key (scale 1))
+  (:angle-vector-with-effort
+   (av ef &optional (tm 1000) (ctype controller-type) (start-time 0) &key (scale 1))
    "Send joint angle to robot, this method returns immediately, so use :wait-interpolation to block until the motion stops.
-- cv : current vector [deg]
+- av : joint angle vector [deg]
+- ef : current vector [deg]
+- tm : (time to goal in [msec])
    if designated tm is faster than fastest speed, use fastest speed
    if not specified, it will use 1/scale of the fastest speed .
    if :fast is specified use fastest speed calculated from max speed
 - start-time : time to start moving
 - scale : if tm is not specified, it will use 1/scale of the fastest speed
 "
-   (format t "send current vector ~A" cv)
+   (format t "angle-vector: ~A, effort: ~A~%" av ef)
+   (if (or (< (elt ef 0) 0) (< (elt ef 1) 0) (< (elt ef 2) 0) (< 1 (elt ef 0)) (< 1 (elt ef 1)) (< 1 (elt ef 2)))
+       (progn
+	 (format t "!! effort: out of range [0.0, 1.0] !!~%")
+	 (return-from :angle-vector-with-effort nil)))
    ;; for simulation mode
    ;; (when (send self :simulation-modep)
-   ;;   (if cv (send self :current-vector-simulation cv tm ctype)))
-   (let ((trajpoint (list (instantiate float-vector (length cv));; positions
-                 (instantiate float-vector (length cv));; velocities
+   ;;   (if ef (send self :current-vector-simulation ef tm ctype)))
+   ;; (let ((trajpoint (list (instantiate float-vector (length ef));; positions
+   (let ((trajpoint (list av ;; positions
+                 (instantiate float-vector (length ef));; velocities
                  (/ tm 1000.0);; duration
-                 (instantiate float-vector (length cv));; accelerations
-                 cv));; current vector
-         (caction (gethash ctype controller-table))
-         (joint-names (cdr (assoc :joint-names (send self ctype)))))
+                 (instantiate float-vector (length ef));; accelerations
+                 ef));; current vector
+         (joint-names (cdr (assoc :joint-names (car (send self ctype))))))
      ;;model
      ;; !!!     (send robot :angle-vector av)
 
@@ -69,12 +75,14 @@
 
    ;;simulation
    ;; (when (send self :simulation-modep)
-   ;;   (return-from :send-ros-controller nil))
+     ;;   (return-from :send-ros-controller nil))
    (dolist (name joint-names)
      (unless (send robot :joint name)
        (warning-message 1 "[robot-interface.l] (send-ros-controller) could not find joint-name '~A' (~A)~%" name (send robot :joint name))
        (return-from :current-vector nil)))
-   (let* ((goal (send caction :make-goal-instance))
+   (let* ((caction (car (gethash ctype controller-table)))
+          ;; (caction (cdr (assoc :action-type (car (send self ctype)))))
+          (goal (send caction :make-goal-instance))
 	  (goal-points nil)
 	  (st (if (numberp start-time)
                   (ros::time+ (ros::time-now) (ros::time start-time))
@@ -124,17 +132,16 @@
          (push (instance trajectory_msgs::JointTrajectoryPoint
                          :init
                          :positions positions
-                         :velocities velocities
-                         :accelerations accelerations
+                         ;; :velocities velocities
+                         ;; :accelerations accelerations
                          :effort efforts
                          :time_from_start (ros::time duration))
                goal-points)
 	   )
        (send self :spin-once)
        (send goal :goal :trajectory :points goal-points)
-       )
      (send caction :send-goal goal)
-     ))
+     )))
   )
 
 (defun rhp3hand_l-init (&rest args)
