@@ -29,7 +29,7 @@
   ;;  (let* ((prev-av (send robot :angle-vector)))
   ;;    (send-all (gethash ctype controller-table) :push-angle-vector-simulation av tm prev-av)))
   (:current-vector
-   (cv &optional (tm 1000) (ctype controller-type) (start-time 0) &key (scale 1))
+   (av cv &optional (tm 1000) (ctype controller-type) (start-time 0) &key (scale 1))
    "Send joint angle to robot, this method returns immediately, so use :wait-interpolation to block until the motion stops.
 - cv : current vector [deg]
    if designated tm is faster than fastest speed, use fastest speed
@@ -42,7 +42,8 @@
    ;; for simulation mode
    ;; (when (send self :simulation-modep)
    ;;   (if cv (send self :current-vector-simulation cv tm ctype)))
-   (let ((trajpoint (list (instantiate float-vector (length cv));; positions
+   ;; (let ((trajpoint (list (instantiate float-vector (length cv));; positions
+   (let ((trajpoint (list av ;; positions
                  (instantiate float-vector (length cv));; velocities
                  (/ tm 1000.0);; duration
                  (instantiate float-vector (length cv));; accelerations
